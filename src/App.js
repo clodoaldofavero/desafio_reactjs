@@ -20,23 +20,33 @@ function App() {
 
   const repo = response.data;
 
-  setRepositories([... repositories, repo]);
+  setRepositories([...repositories, repo]);
   }
 
   async function handleRemoveRepository(id) {
-    // TODO
+    
+    const response = await api.delete(`repositories/${id}`);
+
+    const repoIndex = repositories.findIndex(repo => repo.id === id);
+    if (repoIndex < 0) {
+      return response.status(400).json({ error: 'Repository not found.' });
+    }
+  
+    repositories.splice(repoIndex, 1);
+
+    setRepositories([...repositories]); 
   }
 
   return (
     <div>
       <ul data-testid="repository-list">
-        <li>
-          Repositório 1
-
-          <button onClick={() => handleRemoveRepository(1)}>
+        
+        {repositories.map(repo => <li key={repo.id}>{repo.title}
+          <button onClick={() => handleRemoveRepository(repo.id)}>
             Remover
           </button>
-        </li>
+        
+        </li>)}
       </ul>
 
       <button onClick={handleAddRepository}>Adicionar</button>
